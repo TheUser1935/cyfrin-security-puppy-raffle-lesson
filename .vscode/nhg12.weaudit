@@ -1,0 +1,53 @@
+{
+  "clientRemote": "",
+  "gitRemote": "",
+  "gitSha": "1a138273145cec1df142dacb2aec279319129703",
+  "treeEntries": [
+    {
+      "label": "enterRaffle DoS",
+      "entryType": 0,
+      "author": "nhg12",
+      "locations": [
+        {
+          "path": "4-puppy-raffle-audit\\src\\PuppyRaffle.sol",
+          "startLine": 83,
+          "endLine": 96,
+          "label": "",
+          "description": ""
+        }
+      ],
+      "details": {
+        "severity": "High",
+        "difficulty": "Low",
+        "type": "Denial of Service",
+        "description": "",
+        "exploit": "",
+        "recommendation": "Short term, \nLong term, \n"
+      }
+    },
+    {
+      "label": "refund Reentrancy",
+      "entryType": 0,
+      "author": "nhg12",
+      "locations": [
+        {
+          "path": "4-puppy-raffle-audit\\src\\PuppyRaffle.sol",
+          "startLine": 100,
+          "endLine": 109,
+          "label": "",
+          "description": ""
+        }
+      ],
+      "details": {
+        "severity": "High",
+        "difficulty": "Low",
+        "type": "Configuration",
+        "description": "",
+        "exploit": "",
+        "recommendation": "Short term, \nLong term, \n"
+      }
+    }
+  ],
+  "auditedFiles": [],
+  "resolvedEntries": []
+}
