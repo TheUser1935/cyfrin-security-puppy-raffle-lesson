@@ -63,3 +63,15 @@ Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Solidity                         1             30             43            143
 -------------------------------------------------------------------------------
+
+# Findings
+
+1. MEDIUM - DoS attack in `enterRaffle` function
+   1. PoC is shown in test file
+2. HIGH - Reentrancy attack in `refund` function
+3. Weak Randomness in pickWinner function - using blockchain and ms.sender to generate random number
+4. Integer overflow in pick winner for fees calculation - uses uint64 and is solidity version < 0.8.0
+   1. Can cause extremely incorrect value for total fees
+   2. We will have ETH stuck in our contract because we don't use .balance of contract and instead use a variable that undergoes integer overflow
+5. There is precision loss when converting from uint256 to uint64 in pick winner function for calculating the fees
+   1. We will have ETH stuck in our contract because we don't use .balance of contract and instead use a variable that is set using precision loss in casting

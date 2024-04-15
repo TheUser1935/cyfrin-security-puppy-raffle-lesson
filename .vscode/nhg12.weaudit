@@ -46,6 +46,116 @@
         "exploit": "",
         "recommendation": "Short term, \nLong term, \n"
       }
+    },
+    {
+      "label": "No player found returned value is same value for player at index 0",
+      "entryType": 0,
+      "author": "nhg12",
+      "locations": [
+        {
+          "path": "4-puppy-raffle-audit\\src\\PuppyRaffle.sol",
+          "startLine": 116,
+          "endLine": 124,
+          "label": "",
+          "description": ""
+        }
+      ],
+      "details": {
+        "severity": "",
+        "difficulty": "",
+        "type": "",
+        "description": "",
+        "exploit": "",
+        "recommendation": "Short term, \nLong term, \n"
+      }
+    },
+    {
+      "label": "Integer Overflow, Precision Loss from Type Casting",
+      "entryType": 0,
+      "author": "nhg12",
+      "locations": [
+        {
+          "path": "4-puppy-raffle-audit\\src\\PuppyRaffle.sol",
+          "startLine": 152,
+          "endLine": 152,
+          "label": "",
+          "description": ""
+        }
+      ],
+      "details": {
+        "severity": "",
+        "difficulty": "",
+        "type": "",
+        "description": "",
+        "exploit": "",
+        "recommendation": "Short term, \nLong term, \n"
+      }
+    },
+    {
+      "label": ">Weak Randomness - Calculating Winner Index",
+      "entryType": 0,
+      "author": "nhg12",
+      "locations": [
+        {
+          "path": "4-puppy-raffle-audit\\src\\PuppyRaffle.sol",
+          "startLine": 142,
+          "endLine": 143,
+          "label": "",
+          "description": ""
+        }
+      ],
+      "details": {
+        "severity": "",
+        "difficulty": "",
+        "type": "",
+        "description": "",
+        "exploit": "",
+        "recommendation": "Short term, \nLong term, \n"
+      }
+    },
+    {
+      "label": "Weak Randomness - Caclulating NFT Trait Rarity",
+      "entryType": 0,
+      "author": "nhg12",
+      "locations": [
+        {
+          "path": "4-puppy-raffle-audit\\src\\PuppyRaffle.sol",
+          "startLine": 158,
+          "endLine": 158,
+          "label": "",
+          "description": ""
+        }
+      ],
+      "details": {
+        "severity": "",
+        "difficulty": "",
+        "type": "",
+        "description": "",
+        "exploit": "",
+        "recommendation": "Short term, \nLong term, \n"
+      }
+    },
+    {
+      "label": "Can't Withdraw Fees due to Calculations in selectWinner Function",
+      "entryType": 0,
+      "author": "nhg12",
+      "locations": [
+        {
+          "path": "4-puppy-raffle-audit\\src\\PuppyRaffle.sol",
+          "startLine": 180,
+          "endLine": 180,
+          "label": "",
+          "description": ""
+        }
+      ],
+      "details": {
+        "severity": "",
+        "difficulty": "",
+        "type": "",
+        "description": "",
+        "exploit": "",
+        "recommendation": "Short term, \nLong term, \n"
+      }
     }
   ],
   "auditedFiles": [],
