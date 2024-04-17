@@ -1,6 +1,6 @@
 {
-  "clientRemote": "",
-  "gitRemote": "",
+  "clientRemote": "https://github.com/Cyfrin/4-puppy-raffle-audit.git",
+  "gitRemote": "https://github.com/Cyfrin/4-puppy-raffle-audit.git",
   "gitSha": "1a138273145cec1df142dacb2aec279319129703",
   "treeEntries": [
     {
@@ -80,6 +80,13 @@
           "endLine": 152,
           "label": "",
           "description": ""
+        },
+        {
+          "path": "4-puppy-raffle-audit\\src\\PuppyRaffle.sol",
+          "startLine": 151,
+          "endLine": 151,
+          "label": "",
+          "description": ""
         }
       ],
       "details": {
@@ -92,7 +99,7 @@
       }
     },
     {
-      "label": ">Weak Randomness - Calculating Winner Index",
+      "label": "Weak Randomness - Calculating Winner Index",
       "entryType": 0,
       "author": "nhg12",
       "locations": [
@@ -136,7 +143,7 @@
       }
     },
     {
-      "label": "Can't Withdraw Fees due to Calculations in selectWinner Function",
+      "label": "Can't Withdraw Fees due to Calculations in selectWinner Function, Attacker could use 'selfdestruct' to send ETH to contract causing the require statement to fail resulting in unable to withdraw ETH fees",
       "entryType": 0,
       "author": "nhg12",
       "locations": [
@@ -158,6 +165,15 @@
       }
     }
   ],
-  "auditedFiles": [],
+  "auditedFiles": [
+    {
+      "path": "4-puppy-raffle-audit\\src\\PuppyRaffle.sol",
+      "author": "nhg12"
+    },
+    {
+      "path": "4-puppy-raffle-audit\\src",
+      "author": "nhg12"
+    }
+  ],
   "resolvedEntries": []
 }

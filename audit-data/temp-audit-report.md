@@ -50,7 +50,7 @@ Assisting Security Researcher:
   - [Issues found](#issues-found)
 - [Findings](#findings)
   - [High](#high)
-    - [\[H-1\] Reentrancy vulnerability in `PuppyRaffle::refund()` function due to not following CEI design rules can result in the theft of all native currency in the contract](#h-1-reentrancy-vulnerability-in-puppyrafflerefund-function-due-to-not-following-cei-design-rules-can-result-in-the-theft-of-all-native-currency-in-the-contract)
+    - [\[H-1\] Reentrancy attack in `PuppyRaffle::refund()` function allows draining of all ETH in contract](#h-1-reentrancy-attack-in-puppyrafflerefund-function-allows-draining-of-all-eth-in-contract)
     - [\[H-2\] Integer Overflow in `PuppyRaffle::pickWinner()` function to calculate fees can result in loss of fees and ETH stuck in contract](#h-2-integer-overflow-in-puppyrafflepickwinner-function-to-calculate-fees-can-result-in-loss-of-fees-and-eth-stuck-in-contract)
   - [Medium](#medium)
     - [\[M-1\] Denial of Service - Unbounded array looping in `PuppyRaffle::enterRaffle()` function checking for duplicates can prevent others from entering raffle by increasing the gas cost required to complete the transaction for future entrants](#m-1-denial-of-service---unbounded-array-looping-in-puppyraffleenterraffle-function-checking-for-duplicates-can-prevent-others-from-entering-raffle-by-increasing-the-gas-cost-required-to-complete-the-transaction-for-future-entrants)
@@ -125,13 +125,39 @@ For this contract, only the owner should be able to interact with the contract.
 ## High
 
 
-### [H-1] Reentrancy vulnerability in `PuppyRaffle::refund()` function due to not following CEI design rules can result in the theft of all native currency in the contract
+### [H-1] Reentrancy attack in `PuppyRaffle::refund()` function allows draining of all ETH in contract
 
-**Description:** 
+**Description:** The `PuppyRaffle::refund()` does not follow Checks, Effects, Interactions (CEI) design rules. As a result, a malicious attacker can drain all ETH in the contract by reentering the `PuppyRaffle::refund()` function upon receiving a payment.
 
-**Impact:** 
+The `PuppyRaffle::refund()` will make an external call to the `msg.sender` address to attempt to refund the ETH deposited to enter the raffle, only after making the external call will the function update the `players[]` array.
+
+```solidity
+  function refund(uint256 playerIndex) public {
+        address playerAddress = players[playerIndex];
+        require(playerAddress == msg.sender, "PuppyRaffle: Only the player can refund");
+        require(playerAddress != address(0), "PuppyRaffle: Player already refunded, or is not active");
+
+@>      payable(msg.sender).sendValue(entranceFee);
+@>      players[playerIndex] = address(0);
+
+        emit RaffleRefunded(playerAddress);
+    }
+
+```
+
+An attacker could have a `fallabck()`/`receive()` function that calls the `PuppyRaffle::refund()` again upon receiving a payment, continuing to do this until the ETH in the contract is drained.
+
+**Impact:** An attacker is able to drain all ETH in the contract.
 
 **Proof of Concept:**
+
+1. User enters raffle
+2. Attacker creates a malicious `fallback()`/`receive()` function that calls `PuppyRaffle::refund()` again upon receiving a payment
+3. Attacker enters raffle
+4. Attacker calls `PuppyRaffle::refund()` from their attack contract
+
+<details>
+<summary>Proof of Code</summary>
 
 ```solidity
 contract PuppyRaffleRefundAttack {
@@ -192,6 +218,7 @@ Logs:
   endingBalanceOfPuppyRaffle:  0
   endingBalanceOfattackerContract:  5000000000000000000
 ```
+</details>
 
 **Recommended Mitigation:** There are a couple of methods that can be employed to mitigate the reentrancy vulnerability.
 
@@ -204,10 +231,11 @@ Logs:
         require(playerAddress == msg.sender, "PuppyRaffle: Only the player can refund");
         require(playerAddress != address(0), "PuppyRaffle: Player already refunded, or is not active");
 +       players[playerIndex] = address(0);
++       emit RaffleRefunded(playerAddress);
         payable(msg.sender).sendValue(entranceFee);
 
 -       players[playerIndex] = address(0);
-        emit RaffleRefunded(playerAddress);
+-       emit RaffleRefunded(playerAddress);
     }
 ```
 
@@ -243,19 +271,25 @@ ___
 
 ### [H-2] Integer Overflow in `PuppyRaffle::pickWinner()` function to calculate fees can result in loss of fees and ETH stuck in contract
 
-**Description:** 
+**Description:** The `PuppyRaffle::pickWinner()` function in the `PuppyRaffle` contract can result in an overflow in the `totalFees` variable. Because the `totalFees` variable is only uint64 in size, it only takes ~18.45 ETH to be tracked in the `totalFees` variable to cause an overflow, which results in a loss of ETH and fees due to the fact that the `totalFees` variable is the only variable that tracks the amount of fees owed and will be mathematically incorrect.
+
+Because of this incorrect calculation as a result of the overflow, the `PuppyRaffle::withdrawFees()` function will not be able to complete because the `totalFees` variable will be incorrect and not equal the balance of the contract, which is used to determine if there are players entered.
 
 ```solidity
-uint64 public totalFees = 0;
+    uint64 public totalFees = 0;
 
-...
-...
+    ...
+    ...
 
-uint256 fee = (totalAmountCollected * 20) / 100;
-totalFees = totalFees + uint64(fee);
+    uint256 fee = (totalAmountCollected * 20) / 100;
+@>  totalFees = totalFees + uint64(fee);
 ```
 
-**Impact:** 
+**Impact:** The overflowing integer can result in loss of ETH and fees because the overflow will cause the `totalFees` variable to begin again at zero. Because this varaible is used to track the amount of fees owed and set aside, there will be permanent loss of fees because the number will always be incorrect from when an overflow has occurred.
+
+The protocol will only be tracking a small amount of total fees instead of the large amount of fees that can be owed. Resulting in loss their for the protocol.
+
+Secondly, the `PuppyRaffle::withdrawFees()` function has a check in it to see if the contract balance equals the `totalFees` variable. If they are not equal, then the `PuppyRaffle::withdrawFees()` function will not be able to complete and will revert the transaction due to the assumptions that players are entered into a current raffle. What this means is that you will never be able to withdraw fees once an overflow has occurred.
 
 **Proof of Concept:**
 
@@ -279,7 +313,13 @@ Logs:
   result:  0
 ```
 
-**Recommended Mitigation:** 
+**Recommended Mitigation:** There are a couple of methods that can be employed to mitigate the integer overflow vulnerability.
+
+1. Use uint256, or a larger uint size instead of uint64 for `toalFees`
+2. Use a newer version of solidity, upwards of version 0.8.0 which uses checks to ensure that overflow cannot occur
+3. For versions prior to 0.8.0, there is the SafeMath library by OpenZeppelin. This library can be used to mitigate the integer overflow in arithmetic operations.
+
+Potential that there isn't a need to track the fees in the `totalFees` variable in the `PuppyRaffle` contract if there is re-design of how protocl determines if a raffle is active, and how you manage ETH in the contract.
 ___
 
 
@@ -290,7 +330,6 @@ ___
 **Description:** The `PuppyRaffle::enterRaffle()` function loops through the `PuppyRaffle::players` array to check if an address has already entered the raffle. However, the longer the `PuppyRaffle::players` array is, the greater the gas cost is to enter the raffle. Those who enter the raffle early are rewarded with a lower amount to pay to enter the raffle compared to those who enter the raffle later.
 
 ```solidity
-    //@audit-med - DoS attack. Deliberately increases gas cost to prevent other users entering raffle
 @>  for (uint256 i = 0; i < players.length - 1; i++) {
         for (uint256 j = i + 1; j < players.length; j++) {
             require(players[i] != players[j], "PuppyRaffle: Duplicate player");
