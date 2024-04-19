@@ -37,7 +37,7 @@ Aderyin is a Rust based static analysis tool.
 
 After installing everything, you can just run the command `aderyin` and it will print out a report in a folder that it details.
 
-## Cyfrin's - Smart Contract Explotes - Minimised
+## Cyfrin's - Smart Contract Exploits - Minimised
 
 [Cyfrin's - Smart Contract Exploits - Minimised](https://github.com/Cyfrin/sc-exploits-minimized) is a repository containing minimised examples of common exploits in smart contracts - such as DoS, reeantrancy, etc.
 
@@ -333,7 +333,7 @@ contract AttackSelfDestructMe {
 }
 ```
 
-### The Pull over Psuh for payments problem that can arise with mishandling of ETH
+### The Pull over Push for payments problem that can arise with mishandling of ETH
 
 To open the discussion I want to include 2 quotes from [makoto_inoue's article - A SmartContract best practice: Push, Pull, or Give?](https://medium.com/noblocknoparty/a-smartcontract-best-practice-push-pull-or-give-b2e8428e032a)
 
